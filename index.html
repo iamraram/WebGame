@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 문제 1
+        let user = {}
+        user.name = "John"
+        console.log(user.name)
+
+        user.surname = "Smith"
+        user.name = "Pete"
+        delete user.name
+        console.log(user.name)
+
+        // 문제 2
+        let schedule = {}
+
+        function isEmpty(obj) {
+            for (let key in obj) {
+                return false
+            }
+            return true
+        }
+        console.log(isEmpty(schedule))
+
+        schedule["8:30"] = "get up"
+        console.log(isEmpty(schedule))
+
+        // 문제 3
+        let salaries = {
+            John: 100,
+            Ann: 160,
+            Pete: 130
+        }
+
+        function sumSalaries(obj) {
+            let sum = 0
+            for (let i in obj) {
+                sum += obj[i]
+            }
+            return sum
+        }
+
+        console.log(sumSalaries(salaries))
+
+        // 문제 4
+        let menu = {
+            width: 200,
+            height: 300,
+            title: "My menu"
+        }
+
+        console.log(menu)
+
+        function multiplyNumeric(obj) {
+            for (let i in obj) {
+                if (typeof obj[i] == 'number') {
+                    obj[i] *= 2
+                }
+            }
+        }
+
+        multiplyNumeric(menu)
+        console.log(menu)
+
+        // 객체 메서드 만들기
+        let userMethod = {
+            name: "John",
+            age: 30
+        }
+
+        // user.sayHi = function() {
+        //     console.log("안녕하세요!")
+        // }
+        // user.sayHi()
+
+        userMethod = {
+            sayHi() {
+                console.log("안녕하세요!")
+            }
+        }
+        userMethod.sayHi()
+
+        function sayHi() {
+            console.log(this.name)
+        }
+        users.f = sayHi
+        admin.f = sayHi
+
+        console.log(users.f)
+        console.log(admin.f)
+        console.log(admin['f'])
+
+        // 객체 문제
+        let calculator = {
+            sum() {
+                return this.a + this.b
+            },
+            mul() {
+                return this.a * this.b
+            },
+            read() {
+                // this.a = +prompt("첫번째 값", 0)
+                // this.b = +prompt("두번째 값", 0)
+            }
+        }
+
+        calculator.read()
+        console.log(calculator.sum())
+        console.log(calculator.mul())
+
+        // 객체 생성자 함수
+        function User(name) {
+            this.name = name
+            this.isAdmin = false
+        }
+
+        let user = new User("도현")
+        let user = new User("하람")
+        let user = new User("태서")
+        let user = new User("유성")
+
+        class User_ {
+            constructor(name) {
+                this.name = name
+            }
+
+            sayHi() {
+                console.log(this.name)
+            }
+        }
+
+        let user3 = new User_("도현")
+        user3.sayHi()
+    </script>
+</body>
+
+</html>
