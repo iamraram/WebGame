@@ -165,7 +165,7 @@ function Start () {
     dino = new Dino(25,canvas.height-150,50,50,"pink");
     //dino.Draw();// <- 업데이트 함수에서 그리기 위해서 삭제
 
-    scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
+    scoreText = new Text("현재 점수: " + score, 25, 25, "left", "#212121", "20");
     highscoreText = new Text("HighScore: " + highscore, canvas.width - 25, 25, "right", "#212121", "20");
 
     requestAnimationFrame(Update); // 추가
@@ -173,21 +173,21 @@ function Start () {
 
 class Text {
     constructor (t, x, y, a, c, s) {
-      this.t = t;
-      this.x = x;
-      this.y = y;
-      this.a = a;
-      this.c = c;
-      this.s = s;
+      this.t = t
+      this.x = x
+      this.y = y
+      this.a = a
+      this.c = c
+      this.s = s
     }
   
     Draw () {
-      ctx.beginPath();
-      ctx.fillStyle = this.c;
-      ctx.font = this.s + "px sans-serif";
-      ctx.textAlign = this.a;
-      ctx.fillText(this.t, this.x, this.y);
-      ctx.closePath();
+      ctx.beginPath()
+      ctx.fillStyle = this.c
+      ctx.font = this.s + "px sans-serif"
+      ctx.textAlign = this.a
+      ctx.fillText(this.t, this.x, this.y)
+      ctx.closePath()
     }
 }
 

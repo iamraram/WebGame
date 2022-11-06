@@ -4,6 +4,7 @@ const apiKey = 'https://api.openweathermap.org/data/2.5/weather?lat=37.542813472
 
 let score
 let scoreText
+let comboText
 let highscore
 let highscoreText
 let cookie
@@ -14,6 +15,7 @@ let gameSpeed
 let keys = {}
 let background
 let bonusTime
+let combo
 
 document.addEventListener('keydown', (evt) => {
     keys[evt.code] = true
@@ -99,11 +101,34 @@ class Cookie {
 }
 
 class Obstacle {
-    
+    constructor (x, y, w, h, is) {
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        this.is = is
+
+        this.dx = -gameSpeed
+        this.isBird = false
+    }
+
+    Draw() {
+        let img = new Image()
+        img.src = 'jelly.png'
+        ctx.drawImage(img, this.x, this.y, this.w, this.h);
+    }
+
+    Update() {
+        this.x += this.dx
+        this.Draw()
+        this.dx = -gameSpeed
+    }
 }
 
 class Jelly {
-    constructor (x, y, w, h) {
+    constructor (x, y, w, h, isTouched) {
+        // 여기에 is를 줘서 닿으면 true 안 닿으면 false 한 다음에
+        // 화면 밖으로 나가서 소멸될 때 콤보 체크하는 걸로 했는데 그게 안되는 것 같아요
         this.x = x
         this.y = y
         this.w = w
@@ -123,6 +148,26 @@ class Jelly {
         this.x += this.dx
         this.Draw()
         this.dx = -gameSpeed
+    }
+}
+
+class Text {
+    constructor (t, x, y, a, c, s) {
+      this.t = t
+      this.x = x
+      this.y = y
+      this.a = a
+      this.c = c
+      this.s = s
+    }
+  
+    Draw () {
+      ctx.beginPath()
+      ctx.fillStyle = this.c
+      ctx.font = this.s + "px sans-serif"
+      ctx.textAlign = this.a
+      ctx.fillText(this.t, this.x, this.y)
+      ctx.closePath()
     }
 }
 
@@ -157,8 +202,15 @@ const Start = () => {
   
     ctx.font = "20px sans-serif"
   
-    gameSpeed = 3
+    gameSpeed = 1
     gravity = 1
+
+    score = 0
+    highscore = 0
+    combo = 0
+
+    scoreText = new Text("현재 점수: " + score, 35, 50, "left", "white", "35")
+    comboText = new Text("콤보: " + combo, 35, 80, "left", "white", "20")
 
     cookie = new Cookie(25, canvas.height-150, 100, 100)
 
@@ -171,7 +223,8 @@ let spawnTimer = initialSpawnTimer
 const init = () => {
     jellies = []
     gameSpeed = 3
-
+    score = 0
+    combo = 0
     spawnTimer = initialSpawnTimer
 }
 
@@ -179,8 +232,6 @@ const Update = () => {
     requestAnimationFrame(Update)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     cookie.Animate()
-
-    console.log(jellies)
 
     spawnTimer --
 
@@ -195,24 +246,36 @@ const Update = () => {
 
     for (let i = 0; i < jellies.length; i ++) {
         let o = jellies[i]
+        o.isTouched = false
 
         if (o.x + o.w < 0) {
             jellies.splice(i, 1)
+            if (!o.isTouched) {
+                combo = 0
+                console.log(combo, score)
+            }
         }
-        if (
+        if ((
             cookie.x < o.x + o.w &&
             cookie.x + cookie.w > o.x &&
             cookie.y < o.y + o.h &&
             cookie.y + cookie.h > o.y
-            ) {
+            ) && (o.isTouched == false)) {
             o.w = 0
             o.h = 0
-            score += 1
-            console.log(score)
+            combo += 1
+            score += (17 + (2 * (combo + 1)))
+            isTouched = true
         }
 
         o.Update()
     }
+
+    let result = score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    scoreText.t = "현재 점수: " + result
+    comboText.t = "콤보: " + combo
+    scoreText.Draw()
+    comboText.Draw()
 
     gameSpeed += 0.001;
 }
