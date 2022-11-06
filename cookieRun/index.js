@@ -16,6 +16,8 @@ let keys = {}
 let background
 let bonusTime
 let combo
+let hp
+let hpCount
 
 document.addEventListener('keydown', (evt) => {
     keys[evt.code] = true
@@ -45,16 +47,15 @@ class Cookie {
 
         if (!this.grounded) {   
             img.src = 'cookie_jump.png'
-            ctx.drawImage(img, this.x, this.y, this.w, this.h)
         }
         else if (keys['KeyF'] && this.grounded) {   
             img.src = 'cookie_slide.png'
-            ctx.drawImage(img, this.x, this.y, this.w, this.h)
         }
         else {
             img.src = 'cookie_basic.png'
-            ctx.drawImage(img, this.x, this.y, this.w, this.h)
         }
+
+        ctx.drawImage(img, this.x, this.y, this.w, this.h)
     }
 
     Jump() {
@@ -178,6 +179,10 @@ const SpawnJelly = () => {
     }
     let type = RandomIntInRange(0, 2)
     let jelly = new Jelly(canvas.width + size, canvas.height - size, size, size)
+    if (hpCount == 50) {
+        jelly.img = 'mul.png'
+        hpCount = 0
+    }
   
     if (type == 1) {
         jelly.y -= cookie.originalHeight + 200
@@ -186,6 +191,7 @@ const SpawnJelly = () => {
         jelly.y -= cookie.originalHeight + 30
     }
     jellies.push(jelly)
+    hpCount += 1
 }
 
 const SpawnObstacle = () => {
@@ -218,6 +224,9 @@ const Start = () => {
     score = 0
     highscore = 0
     combo = 0
+
+    hpCount = 0
+    hp = 100
 
     scoreText = new Text("현재 점수: " + score, 35, 50, "left", "white", "35")
     comboText = new Text("콤보: " + combo, 35, 80, "left", "white", "20")
