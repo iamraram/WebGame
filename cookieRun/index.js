@@ -255,6 +255,8 @@ const init = () => {
     combo = 0
     spawnTimer = initialSpawnTimer
     O_spawnTimer = O_initialSpawnTimer
+
+    window.localStorage.setItem('highscore', highscore)
 }
 
 const Update = () => {
@@ -296,6 +298,7 @@ const Update = () => {
             cookie.y < o_obstacle.y + o_obstacle.h &&
             cookie.y + cookie.h > o_obstacle.y
             ) {
+                window.localStorage.setItem('highscore', highscore)
                 location.reload()
         }
 
@@ -317,7 +320,7 @@ const Update = () => {
             cookie.x + cookie.w > o.x &&
             cookie.y < o.y + o.h &&
             cookie.y + cookie.h > o.y
-            ) && (o.isTouched == false)) {
+            )) {
                 jellies.splice(i, 1)
                 combo += 1
                 score += (17 + (2 * (combo + 1)))
