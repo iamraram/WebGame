@@ -2,22 +2,22 @@ const canvas = document.getElementById('canvas')
 const ctx = canvas.getContext('2d')
 const apiKey = 'https://api.openweathermap.org/data/2.5/weather?lat=37.54281347234269&lon=126.96677338393458&appid=5625569fc712a015c07bce5391e7e74a&units=metric'
 
-let score
-let scoreText
-let comboText
-let highscore
-let highscoreText
-let cookie
-let gravity
-let obstacles = []
-let jellies = []
-let gameSpeed
-let keys = {}
-let background
-let bonusTime
-let combo
-let hp
-let hpCount
+let score,
+    scoreText,
+    comboText,
+    highscore,
+    highscoreText,
+    cookie,
+    gravity,
+    obstacles = [],
+    jellies = [],
+    gameSpeed,
+    keys = {},
+    background,
+    bonusTime,
+    combo,
+    hp,
+    hpCount
 
 document.addEventListener('keydown', (evt) => {
     keys[evt.code] = true
