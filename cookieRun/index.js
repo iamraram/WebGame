@@ -228,8 +228,13 @@ const Start = () => {
     hpCount = 0
     hp = 100
 
+    if (localStorage.getItem('highscore')) {
+        highscore = localStorage.getItem('highscore')
+    }
+
     scoreText = new Text("현재 점수: " + score, 35, 50, "left", "white", "35")
     comboText = new Text("콤보: " + combo, 35, 80, "left", "white", "20")
+    highscoreText = new Text("최고 점수: " + highscore, canvas.width - 35, 50, "right", "white", "35")
 
     cookie = new Cookie(25, canvas.height-150, 80, 80)
 
@@ -329,7 +334,17 @@ const Update = () => {
     scoreText.Draw()
     comboText.Draw()
 
-    gameSpeed += 0.007;
+    if (score > highscore) {
+        highscore = score
+        highscoreText.t = "최고 점수!"
+      }
+      else {
+        highscoreText.t = "최고 점수: " + highscore
+      }
+    
+      highscoreText.Draw()
+
+    gameSpeed += 0.007
 }
 
 const getJson = (url, callback) => {
