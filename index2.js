@@ -17,6 +17,7 @@ let tempSeoul = 0
 document.addEventListener('keydown', function (evt) {
     keys[evt.code] = true;
 });
+
 document.addEventListener('keyup', function (evt) {
     keys[evt.code] = false;
 });
@@ -96,6 +97,7 @@ class Dino {
         this.Draw();
       }
 }
+
 class Obstacle {
     constructor (x, y, w, h, c) {
       this.x = x;
@@ -137,12 +139,12 @@ function SpawnObstacle () {
       obstacle.isBird = true
     }
     obstacles.push(obstacle);
-  }
+}
   
   
-  function RandomIntInRange (min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-  }
+function RandomIntInRange (min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
 
 function Start () {
     canvas.width = window.innerWidth;
