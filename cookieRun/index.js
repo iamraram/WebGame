@@ -9,6 +9,7 @@ let highscoreText
 let cookie
 let gravity
 let obstacles = []
+let jellies = []
 let gameSpeed
 let keys = {}
 let background
@@ -31,7 +32,7 @@ class Cookie {
         this.h = h
 
         this.dy = 0
-        this.jumpForce = 15
+        this.jumpForce = 10
         this.originalHeight = h
         this.grounded = false
         this.jumpTimer = 0
@@ -98,6 +99,10 @@ class Cookie {
 }
 
 class Obstacle {
+    
+}
+
+class Jelly {
     constructor (x, y, w, h) {
         this.x = x
         this.y = y
@@ -109,33 +114,42 @@ class Obstacle {
     }
 
     Draw() {
-
+        let img = new Image()
+        img.src = 'jelly.png'
+        ctx.drawImage(img, this.x, this.y, this.w, this.h);
     }
 
     Update() {
-        
-    }
-}
-
-class Jelly {
-    constructor (x, y, w, h) {
-        this.x = x
-        this.y = y
-        this.w = w
-        this.h = h
-
+        this.x += this.dx
+        this.Draw()
         this.dx = -gameSpeed
-        this.isBigJelly = false
-    }
-
-    Draw() {
-
-    }
-
-    Update() {
-
     }
 }
+
+const SpawnJelly = () => {
+    let size = RandomIntInRange(1, 100)
+    if (size == 1) {
+        size = 80
+    }
+    else {
+        size = 30
+    }
+    let type = RandomIntInRange(0, 2)
+    let jelly = new Jelly(canvas.width + size, canvas.height - size, size, size)
+  
+    if (type == 1) {
+        jelly.y -= cookie.originalHeight + 85
+    }
+    else if (type == 2) {
+        jelly.y -= cookie.originalHeight + 15
+    }
+    jellies.push(jelly)
+}
+
+const RandomIntInRange = (min, max) => {
+    return Math.round(Math.random() * (max - min) + min)
+  }
+  
 
 const Start = () => {
     canvas.width = window.innerWidth
@@ -151,14 +165,56 @@ const Start = () => {
     requestAnimationFrame(Update)
 }
 
-const init = () => {
+let initialSpawnTimer = 1
+let spawnTimer = initialSpawnTimer
 
+const init = () => {
+    jellies = []
+    gameSpeed = 3
+
+    spawnTimer = initialSpawnTimer
 }
 
 const Update = () => {
     requestAnimationFrame(Update)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     cookie.Animate()
+
+    console.log(jellies)
+
+    spawnTimer --
+
+    if (spawnTimer <= 0) {
+        SpawnJelly()
+        spawnTimer = initialSpawnTimer - gameSpeed * 8
+        
+        if (spawnTimer < 30) {
+        spawnTimer = 30
+        }
+    }
+
+    for (let i = 0; i < jellies.length; i ++) {
+        let o = jellies[i]
+
+        if (o.x + o.w < 0) {
+            jellies.splice(i, 1)
+        }
+        if (
+            cookie.x < o.x + o.w &&
+            cookie.x + cookie.w > o.x &&
+            cookie.y < o.y + o.h &&
+            cookie.y + cookie.h > o.y
+            ) {
+            o.w = 0
+            o.h = 0
+            score += 1
+            console.log(score)
+        }
+
+        o.Update()
+    }
+
+    gameSpeed += 0.001;
 }
 
 const getJson = (url, callback) => {

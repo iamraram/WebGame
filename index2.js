@@ -209,7 +209,7 @@ function Update () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     dino.Animate(); //공룡한테 애니메이션 주는 함수 <-여기서 그려줄거임
 
-    spawnTimer--; //스폰타이머 --
+    spawnTimer --; //스폰타이머 --
     if (spawnTimer <= 0) { //장애물 속도 조절하는 if문
         SpawnObstacle(); //장애물 객체 생성
         console.log(obstacles);
