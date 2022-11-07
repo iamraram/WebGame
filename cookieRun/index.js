@@ -17,7 +17,8 @@ let score,
     bonusTime,
     combo,
     hp,
-    hpCount
+    hpCount,
+    bonusCount
 
 document.addEventListener('keydown', (evt) => {
     keys[evt.code] = true
@@ -36,7 +37,7 @@ class Cookie {
         this.h = h
 
         this.dy = 0
-        this.jumpForce = 15
+        this.jumpForce = 17
         this.originalHeight = h
         this.grounded = false
         this.jumpTimer = 0
@@ -125,12 +126,13 @@ class Obstacle {
 }
 
 class Jelly {
-    constructor (x, y, w, h, isTouched) {
+    constructor (x, y, w, h, isBonus, isTouched) {
         this.x = x
         this.y = y
         this.w = w
         this.h = h
         this.isTouched = isTouched
+        this.isBonus = isBonus
 
         this.dx = -gameSpeed
         this.isBird = false
@@ -170,15 +172,24 @@ class Text {
 }
 
 const SpawnJelly = () => {
-    let size = RandomIntInRange(1, 100)
-    if (size == 1) {
-        size = 80
-    }
-    else {
+    let isBonusInfunction = false
+    let size = RandomIntInRange(1, 20)
+    if (bonusTime) {
         size = 30
     }
+    else {
+        if (size == 1) {
+            size = 80
+            isBonusInfunction = true
+        }
+        else {
+            size = 30
+        }
+    }
     let type = RandomIntInRange(0, 2)
-    let jelly = new Jelly(canvas.width + size, canvas.height - size, size, size)
+    let jelly = new Jelly (
+        canvas.width + size, canvas.height - size, size, size, isBonusInfunction
+    )
     if (hpCount == 50) {
         jelly.img = 'mul.png'
         hpCount = 0
@@ -195,7 +206,7 @@ const SpawnJelly = () => {
 }
 
 const SpawnObstacle = () => {
-    size = 70
+    size = 55
     let type = RandomIntInRange(0, 1)
 
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size)
@@ -204,7 +215,6 @@ const SpawnObstacle = () => {
         obstacle.y -= cookie.originalHeight - 10
     }
     obstacles.push(obstacle)
-    console.log(obstacles)
 }
 
 const RandomIntInRange = (min, max) => {
@@ -222,19 +232,19 @@ const Start = () => {
     gravity = 1
 
     score = 0
-    highscore = 0
+    bonusTime = false
     combo = 0
+    bonusCount = 0
 
     hpCount = 0
     hp = 100
 
-    if (localStorage.getItem('highscore')) {
-        highscore = localStorage.getItem('highscore')
-    }
+    highscore = Number(localStorage.getItem("highscore"))
 
     scoreText = new Text("현재 점수: " + score, 35, 50, "left", "white", "35")
     comboText = new Text("콤보: " + combo, 35, 80, "left", "white", "20")
-    highscoreText = new Text("최고 점수: " + highscore, canvas.width - 35, 50, "right", "white", "35")
+    highscoreText = new Text("최고 점수: " + String(highscore).replace(/\B(?=(\d{3})+(?!\d))/g, ','), canvas.width - 35, 50, "right", "white", "35")
+    highscoreText.Draw()
 
     cookie = new Cookie(25, canvas.height-150, 80, 80)
 
@@ -248,15 +258,10 @@ let O_initialSpawnTimer = 1
 let O_spawnTimer = O_initialSpawnTimer
 
 const init = () => {
-    jellies = []
-    obstacles = []
-    gameSpeed = 5
-    score = 0
-    combo = 0
-    spawnTimer = initialSpawnTimer
-    O_spawnTimer = O_initialSpawnTimer
-
-    window.localStorage.setItem('highscore', highscore)
+    const str = String(highscore)
+    console.log(highscore)
+    window.localStorage.setItem('highscore', str)
+    location.reload()
 }
 
 const Update = () => {
@@ -270,9 +275,22 @@ const Update = () => {
     if (spawnTimer <= 0) {
         SpawnJelly()
         spawnTimer = initialSpawnTimer - gameSpeed * 8
-        
-        if (spawnTimer < 30) {
-            spawnTimer = 30
+        if (
+            bonusTime == true &&
+            (bonusCount + 5 == new Date().getSeconds())
+        ) {
+            bonusTime = false
+        }
+
+        if (bonusTime == true) {
+            if (spawnTimer < 0.1) {
+                spawnTimer = 0.1
+            }
+        }
+        else {
+            if (spawnTimer < 30) {
+                spawnTimer = 30
+            }
         }
     }
 
@@ -298,9 +316,7 @@ const Update = () => {
             cookie.y < o_obstacle.y + o_obstacle.h &&
             cookie.y + cookie.h > o_obstacle.y
             ) {
-                window.localStorage.setItem('highscore', highscore.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                )
-                location.reload()
+                init()
         }
 
         o_obstacle.Update()
@@ -313,7 +329,6 @@ const Update = () => {
             jellies.splice(i, 1)
             if (!o.isTouched) {
                 combo = 0
-                console.log(combo, score)
             }
         }
         if ((
@@ -322,6 +337,10 @@ const Update = () => {
             cookie.y < o.y + o.h &&
             cookie.y + cookie.h > o.y
             )) {
+                if (o.isBonus) {
+                    bonusTime = true
+                    bonusCount = new Date().getSeconds()
+                }
                 jellies.splice(i, 1)
                 combo += 1
                 score += (2006 + (915 * (combo + 1)))
@@ -331,24 +350,32 @@ const Update = () => {
         o.Update()
     }
 
-    let result = score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    let result = String(score).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
     scoreText.t = "현재 점수: " + result
-    comboText.t = "콤보: " + combo
+
     scoreText.Draw()
+    if (bonusTime == true) {
+        comboText.t = "보너스타임!"
+        document.querySelector('body').style.backgroundImage = "url('/cookieRun/11.png')"
+        comboText.Draw()
+    }
+    else {
+        document.querySelector('body').style.backgroundImage = "url('/cookieRun/06.png')"
+        comboText.t = "콤보: " + combo
+    }
     comboText.Draw()
 
     if (score > highscore) {
         highscore = score
-        highscoreText.t = "최고 점수!"
-      }
-      else {
-        highscoreText.t = "최고 점수: " + highscore
-      }
-    
-      highscoreText.Draw()
+        }
+    else {
+        highscoreText = new Text("최고 점수: " + String(highscore).replace(/\B(?=(\d{3})+(?!\d))/g, ','), canvas.width - 35, 50, "right", "white", "35")
+    }
 
-    gameSpeed += 0.007
+    highscoreText.Draw()
+
+    gameSpeed += 0.005
 }
 
 const getJson = (url, callback) => {
