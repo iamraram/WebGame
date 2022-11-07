@@ -357,11 +357,11 @@ const Update = () => {
     scoreText.Draw()
     if (bonusTime == true) {
         comboText.t = "보너스타임!"
-        document.querySelector('body').style.backgroundImage = "url('/cookieRun/11.png')"
+        document.querySelector('body').style.backgroundImage = "url('cookieRun/11.png')"
         comboText.Draw()
     }
     else {
-        document.querySelector('body').style.backgroundImage = "url('/cookieRun/06.png')"
+        document.querySelector('body').style.backgroundImage = "url('cookieRun/06.png')"
         comboText.t = "콤보: " + combo
     }
     comboText.Draw()
